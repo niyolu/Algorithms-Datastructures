@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "C:/Dev/Algo-DS/DS/Deque/main.cpp" "C:/Dev/Algo-DS/DS/Deque/cmake-build-debug/CMakeFiles/Deque.dir/main.cpp.obj"
+  "C:/Dev/Algorithms-Datastructures/DS/Deque/main.cpp" "C:/Dev/Algorithms-Datastructures/DS/Deque/cmake-build-debug/CMakeFiles/Deque.dir/main.cpp.obj"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

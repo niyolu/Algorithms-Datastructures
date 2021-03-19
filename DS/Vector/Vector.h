@@ -10,9 +10,7 @@
 #include <iterator>
 #include <exception>
 
-//because what even is git
-
-#define REVERSE
+//#define REVERSE
 
 template <typename Vector>
 class VectorIterator {
@@ -32,20 +30,33 @@ public:
 
     const virtual VectorIterator& operator--(int) = 0;
 
+    virtual VectorIterator& operator+(int) = 0;
+
+    virtual VectorIterator& operator-(int) = 0;
+
+    virtual VectorIterator& operator+=(int) = 0;
+
+    virtual VectorIterator& operator-=(int) = 0;
+
     ReferenceType operator[](std::size_t index) {
-        return *(this->m_ptr + index);
+        return *(m_ptr + index);
     }
 
     PointerType operator->() {
-        return this->m_ptr;
+        return m_ptr;
     }
 
     ReferenceType operator*() {
-        return *this->m_ptr;
+        return *m_ptr;
+    }
+
+    VectorIterator& operator=(const VectorIterator& other) {
+        m_ptr = other.m_ptr;
+        return *this;
     }
 
     bool operator==(const VectorIterator& other) {
-        return this->m_ptr == other.m_ptr;
+        return m_ptr == other.m_ptr;
     }
 
     bool operator!=(const VectorIterator& other) {
@@ -55,13 +66,17 @@ public:
 
 
 template <typename Vector>
-class FVectorIterator : public VectorIterator<Vector>{
+class FVectorIterator : public VectorIterator<Vector> {
 public:
     using ValueType = typename Vector::ValueType;
     using PointerType = ValueType*;
     using ReferenceType = ValueType&;
 
 public:
+
+    FVectorIterator() {
+        this->m_ptr = nullptr;
+    }
 
     FVectorIterator(const FVectorIterator& other) {
         this->m_ptr = other.m_ptr;
@@ -92,6 +107,25 @@ public:
         --(*this);
         return temp;
     }
+
+    FVectorIterator& operator+(int index) {
+        PointerType ptr = this->m_ptr + index;
+        FVectorIterator *it = new FVectorIterator(ptr);
+        return *it;
+    }
+
+    FVectorIterator& operator-(int index) {
+        return (*this) + (-index);
+    }
+
+    FVectorIterator& operator+=(int index) {
+        this->m_ptr += index;
+        return *this;
+    }
+
+    FVectorIterator& operator-=(int index) {
+        return (*this) += -index;
+    }
 };
 
 
@@ -103,6 +137,10 @@ public:
     using ValueType = typename Vector::ValueType;
     using PointerType = ValueType*;
     using ReferenceType = ValueType&;
+
+    RVectorIterator() {
+        this->m_ptr = nullptr;
+    }
 
     RVectorIterator(const RVectorIterator& other) {
         this->m_ptr = other.m_ptr;
@@ -133,6 +171,25 @@ public:
         --(*this);
         return temp;
     }
+
+    RVectorIterator& operator+(int index) {
+        PointerType ptr = this->m_ptr - index;
+        RVectorIterator *it = new RVectorIterator(ptr);
+        return *it;
+    }
+
+    RVectorIterator& operator-(int index) {
+        return (*this) + (-index);
+    }
+
+    RVectorIterator& operator+=(int index) {
+        this->m_ptr -= index;
+        return *this;
+    }
+
+    RVectorIterator& operator-=(int index) {
+        return (*this) += -index;
+    }
 };
 #endif
 
@@ -145,6 +202,8 @@ public:
 #ifdef REVERSE
     using ReverseIterator = RVectorIterator<Vector<T>>;
 #endif
+    static const std::size_t MIN_SIZE = 16;
+
 private:
     T *m_data;
     std::size_t m_capacity;
@@ -157,13 +216,13 @@ public:
         reAlloc(m_capacity);
     }
 
-    Vector() : Vector(16) {}
+    Vector() : Vector(MIN_SIZE) {}
 
     Vector(const Vector& other)
             : m_size(0), m_capacity(other.m_capacity) {
         reAlloc(m_capacity);
-        for (auto val : other)
-            push_back(val);
+        for (auto value : other)
+            push_back(value);
         m_size = other.m_size;
     }
 
@@ -193,14 +252,14 @@ private:
 public:
 
     void push_back(const T& value) {
-        if (m_size >= m_capacity)
-            reAlloc(m_capacity + m_capacity / 2);
+        if (m_size > m_capacity)
+            reAlloc(std::max((int)(m_capacity + m_capacity / 2), (int) MIN_SIZE));
         m_data[m_size++] = value;
     }
 
     void push_back(T&& value) {
-        if (m_size >= m_capacity)
-            reAlloc(m_capacity + m_capacity / 2);
+        if (m_size > m_capacity)
+            reAlloc(std::max((int)(m_capacity + m_capacity / 2), (int) MIN_SIZE));
         m_data[m_size++] = std::move(value);
     }
 
@@ -208,7 +267,7 @@ public:
     template<typename... Args>
     T& emplace_back(Args&&... args) {
         if (m_size >= m_capacity)
-            reAlloc(m_capacity + m_capacity / 2);
+            reAlloc(std::max((int)(m_capacity + m_capacity / 2), (int) MIN_SIZE));
         new(&m_data[m_size]) T(std::forward<Args>(args)...);
         return m_data[m_size++];
     }
@@ -219,8 +278,8 @@ public:
     }
 
     void clear() {
-        for (auto& val : *this)
-            val.~T();
+        for (auto& value : *this)
+            value.~T();
         m_size = 0;
     }
 
@@ -261,6 +320,8 @@ public:
             push_back(val);
         return *this;
     }
+
+public:
 
     friend std::ostream& operator<<(std::ostream& os, const Vector& vec) {
         for (auto el : vec)

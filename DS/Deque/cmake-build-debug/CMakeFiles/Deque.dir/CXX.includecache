@@ -6,11 +6,21 @@
 
 #IncludeRegexTransform: 
 
-C:/Dev/Algo-DS/DS/Deque/Deque.h
+C:/Dev/Algorithms-Datastructures/DS/Deque/Deque.h
+../Vector/Vector.h
+C:/Dev/Algorithms-Datastructures/DS/Vector/Vector.h
+cmath
+-
 
-C:/Dev/Algo-DS/DS/Deque/main.cpp
+C:/Dev/Algorithms-Datastructures/DS/Deque/main.cpp
 iostream
 -
 Deque.h
-C:/Dev/Algo-DS/DS/Deque/Deque.h
+C:/Dev/Algorithms-Datastructures/DS/Deque/Deque.h
+
+C:/Dev/Algorithms-Datastructures/DS/Vector/Vector.h
+iterator
+-
+exception
+-
 

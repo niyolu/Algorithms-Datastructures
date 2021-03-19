@@ -8,21 +8,116 @@
 #endif //DEQUE_DEQUE_H
 
 #include "../Vector/Vector.h"
+#include <cmath>
+
+template <typename Deque>
+class DequeIterator {
+public:
+    using VectorIterator = typename Deque::Vector::Iterator;
+    using ValueType = typename Deque::Vector::ValueType;
+    using PointerType = ValueType*;
+    using ReferenceType = ValueType&;
+
+protected:
+    VectorIterator* m_current;
+    VectorIterator* m_L_iterator;
+    const VectorIterator* m_end;
+    VectorIterator* m_R_iterator;
+
+public:
+
+    virtual DequeIterator& operator++() = 0;
+
+#if 0
+
+    const virtual DequeIterator& operator++(int) = 0;
+
+    virtual DequeIterator& operator--() = 0;
+
+    const virtual DequeIterator& operator--(int) = 0;
+
+#endif
+
+    ReferenceType operator[](std::size_t index) {
+        return (*m_current)[index];
+    }
+
+    PointerType operator->() {
+        return *m_current;
+    }
+
+    ReferenceType operator*() {
+        return **m_current;
+    }
+
+    bool operator==(const VectorIterator& other) {
+        return m_current == other.current;
+    }
+
+    bool operator!=(const VectorIterator& other) {
+        return !(*this == other);
+    }
+};
+
+template <typename Deque>
+class FDequeIterator : public DequeIterator<Deque> {
+public:
+    using VectorIterator = typename Deque::Vector::Iterator;
+    using ValueType = typename Deque::Vector::ValueType;
+    using PointerType = ValueType*;
+    using ReferenceType = ValueType&;
+
+public:
+
+    FDequeIterator(const FDequeIterator& other) {
+        this->m_current = other.m_current;
+        this->m_L_iterator = other.m_L_iterator;
+        this->m_R_iterator = other.m_R_iterator;
+        this->m_end = other.m_end;  // points to left Vector end
+    }
+
+    FDequeIterator(VectorIterator* L_iterator,
+                   VectorIterator* R_iterator,
+                   VectorIterator* current,
+                   VectorIterator* end) {
+        this->m_L_iterator = L_iterator;
+        this->m_R_iterator = R_iterator;
+        this->m_current = current;
+        this->m_end = end;
+    }
+
+    FDequeIterator& operator++() {
+        if (this->m_L_iterator != nullptr && this->m_current + 1 == this->m_end)
+            this->m_current = this->m_R_iterator;
+        else
+            this->m_current++;
+        return *this;
+    }
+};
 
 template <typename T>
 class Deque {
+public:
+    using Vector = Vector<T>;
+    using VectorIterator = typename Vector::Iterator;
+    using Iterator = FDequeIterator<Deque<T>>;
+#ifdef REVERSE
+    using ReverseIterator = RDequeIterator<Vector>;
+    using ReverseVectorIterator = typename Vector::ReverseIterator;
+#endif
 protected:
-    Vector<T> m_left;
-    Vector<T> m_right;
+    Vector m_left;
+    Vector m_right;
 
 public:
-    Deque() : Deque(16) {}
+    Deque() : Deque(Vector::MIN_SIZE) {}
 
-    Deque(std::size_t capacity) : m_left(0), m_right(capacity) {}
+    Deque(std::size_t capacity)
+    : m_left(std::floor((double) capacity/2.0f)), m_right((std::ceil((double) capacity/2.0f))) {}
 
     Deque(const Deque& other) : m_left(other.m_left), m_right(other.m_right) {}
 
-    Deque(const Vector<T>& vec) : m_left(0), m_right(vec) {}
+    Deque(const Vector& vec) : m_left(0), m_right(vec) {}
 
     ~Deque() = default;
 
@@ -34,17 +129,83 @@ public:
         return m_right.empty() ? m_left[0] :  m_right[m_right.Size() - 1];
     }
 
-#if 0
-    T& operator[](std::size_t);
+    T& operator[](std::size_t index) {
+        return (index < m_left.Size()) ? m_left[m_left.Size() - index - 1] : m_right[index - m_left.Size()];
+    }
 
-    void push_back(const T&);
-    void emplace_back(const T&);
-    void pop_back();
+    void push_back(const T& value) {
+        m_right.push_back(value);
+    }
 
-    void push_front(const T&);
-    void emplace_front(const T&);
-    void pop_font();
+    void emplace_back(const T& value) {
+        m_right.emplace_back(value);
+    }
 
-    void clear();
-#endif
+    void pop_back() {
+        m_right.pop_back();
+    }
+
+    void push_front(const T& value) {
+        m_left.push_back(value);
+    }
+
+    void emplace_front(const T& value) {
+        m_left.emplace_back(value);
+    }
+
+    void pop_front() {
+        m_left.pop_back();
+    }
+
+    void clear() {
+        m_right.clear();
+        m_left.clear();
+    }
+
+    std::size_t Size() {
+        return m_left.Size() + m_right.Size();
+    }
+
+    std::size_t Capacity() {
+        return m_left.Capacity() + m_right.Capacity();
+    }
+
+    bool empty() {
+        return m_left.empty() && m_right.empty();
+    }
+
+    Iterator begin() const {
+
+        VectorIterator *L_it, *R_it, *current, *end;
+        VectorIterator
+        L_begin = m_left.begin(),
+        R_begin = m_right.begin(),
+        L_end = m_left.end(),
+        R_end = m_right.end();
+
+        if (!m_left.empty()) {
+
+            L_it = &L_begin;
+            R_it = &R_begin;
+            current = &L_begin;
+            end = &L_end;
+            //return Iterator(&(m_left.begin()), &(m_right.begin()), &(m_left.begin()), &(m_left.end()));
+        }
+        else {
+            L_it = nullptr;
+            R_it = &R_begin;
+            current = &R_begin;
+            end = nullptr;
+            // return Iterator(nullptr, &(m_right.begin()), &(m_right.begin()), nullptr);
+        }
+        return Iterator(L_it, R_it, current, end);
+    }
+    /*
+    Iterator end() const {
+        if (m_right.empty())
+            return Iterator(&(m_left.begin()), nullptr, &(m_left.end()), nullptr);
+        else
+            return Iterator(&(m_left.begin()), &(m_right.begin()), &(m_right.end()), &(m_left.end()));
+    }
+     */
 };

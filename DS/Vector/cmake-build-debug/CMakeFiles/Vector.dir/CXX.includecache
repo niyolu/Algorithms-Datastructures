@@ -6,15 +6,15 @@
 
 #IncludeRegexTransform: 
 
-C:/Dev/Algo-DS/DS/Vector/Vector.h
+C:/Dev/Algorithms-Datastructures/DS/Vector/Vector.h
 iterator
 -
 exception
 -
 
-C:/Dev/Algo-DS/DS/Vector/main.cpp
+C:/Dev/Algorithms-Datastructures/DS/Vector/main.cpp
 iostream
 -
 Vector.h
-C:/Dev/Algo-DS/DS/Vector/Vector.h
+C:/Dev/Algorithms-Datastructures/DS/Vector/Vector.h
 

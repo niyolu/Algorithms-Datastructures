@@ -21,7 +21,25 @@ int main(int argc, char** argv) {
     for (auto it = bla.rbegin(), end = bla.rend(); it != end; ++it) {
         std::cout << *it << std::endl;
     }
+
+    std::cout << "testing assignment operator" << std::endl;
+    auto iterator = bla.begin();
+    auto iterator2 = iterator;
+    iterator2++;
+    std::cout << *iterator << std::endl;
+    std::cout << "testing + operator" << std::endl;
+    std::cout << *(iterator + 3) << std::endl;
+    std::cout << "testing += operator" << std::endl;
+    iterator += 4;
+    std::cout << *iterator << std::endl;
+    std::cout << "testing - operator" << std::endl;
+    std::cout << *(iterator - 3) << std::endl;
+    std::cout << "testing -= operator" << std::endl;
+    std::cout << *(iterator -= 2) << std::endl;
+
 #else
+    int i = 1;
+    int *iptr = &i;
     Vector<int> vec;
     vec.push_back(0);
     vec.push_back(1);
@@ -53,6 +71,13 @@ int main(int argc, char** argv) {
     std::cout << vec3;
     vec3 = vec2;
     std::cout << vec3;
+    std::cout << "testing end value" << std::endl;
+    Vector<double> vec4(20);
+    for (int i = 0; i < 20; ++i) {
+        vec4.push_back(0.1f);
+    }
+    std::cout << *vec4.end() << std::endl;
+    std::cout << *(vec4.end() - 1) << std::endl;
 #endif
     return 0;
 }

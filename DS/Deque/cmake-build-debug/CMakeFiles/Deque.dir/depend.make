@@ -3,4 +3,5 @@
 
 CMakeFiles/Deque.dir/main.cpp.obj: ../Deque.h
 CMakeFiles/Deque.dir/main.cpp.obj: ../main.cpp
+CMakeFiles/Deque.dir/main.cpp.obj: C:/Dev/Algorithms-Datastructures/DS/Vector/Vector.h
 
