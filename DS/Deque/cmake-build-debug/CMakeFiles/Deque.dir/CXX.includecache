@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Dev/Algo-DS/DS/Deque/Deque.h
+
+C:/Dev/Algo-DS/DS/Deque/main.cpp
+iostream
+-
+Deque.h
+C:/Dev/Algo-DS/DS/Deque/Deque.h
+

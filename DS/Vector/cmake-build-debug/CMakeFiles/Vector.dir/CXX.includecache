@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Dev/Algo-DS/DS/Vector/Vector.h
+iterator
+-
+exception
+-
+
+C:/Dev/Algo-DS/DS/Vector/main.cpp
+iostream
+-
+Vector.h
+C:/Dev/Algo-DS/DS/Vector/Vector.h
+
