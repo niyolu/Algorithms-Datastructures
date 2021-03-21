@@ -252,13 +252,13 @@ private:
 public:
 
     void push_back(const T& value) {
-        if (m_size > m_capacity)
+        if (m_size >= m_capacity)
             reAlloc(std::max((int)(m_capacity + m_capacity / 2), (int) MIN_SIZE));
         m_data[m_size++] = value;
     }
 
     void push_back(T&& value) {
-        if (m_size > m_capacity)
+        if (m_size >= m_capacity)
             reAlloc(std::max((int)(m_capacity + m_capacity / 2), (int) MIN_SIZE));
         m_data[m_size++] = std::move(value);
     }
@@ -272,15 +272,49 @@ public:
         return m_data[m_size++];
     }
 
-    void pop_back() {
-        if (m_size <= 0) return;
+    T pop_back() {
+        T return_value = back();
+        if (m_size <= 0) {
+            std::string msg = "Tried to pop an empty array";
+            throw std::out_of_range(msg);
+        }
         m_data[--m_size].~T();
+        return return_value;
     }
 
     void clear() {
         for (auto& value : *this)
             value.~T();
         m_size = 0;
+    }
+
+    T remove(std::size_t index) {
+        if (index >= m_size || index < 0 || m_capacity == 0) {
+            std::string msg = "m_data[" + std::to_string(index) + "], cap=" + std::to_string(m_capacity);
+            throw std::out_of_range(msg);
+        }
+        // Todo same problem as below in Vector::back
+        if (index == m_size - 1)
+            return pop_back();
+
+        Vector<T> new_vector(m_capacity);
+        for (std::size_t i = 0; i < m_size; i++) {
+            if (i == index) continue;
+            new_vector.push_back((*this)[i]);
+        }
+        T return_value = m_data[index];
+        *this = new_vector;
+        return return_value;
+    }
+
+    T front() const {
+        return m_data[0];
+    }
+
+    T back() const {
+        // TODO this needs an offset together with [] that increases it for non consecutive blocks of data:
+        // [el0, el1, null, null el3]
+        return m_data[m_size - 1];
     }
 
     std::size_t Size() const {

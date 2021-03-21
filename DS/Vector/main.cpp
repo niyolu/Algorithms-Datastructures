@@ -38,13 +38,18 @@ int main(int argc, char** argv) {
     std::cout << *(iterator -= 2) << std::endl;
 
 #else
-    int i = 1;
-    int *iptr = &i;
-    Vector<int> vec;
+    Vector<int> vec(0);
     vec.push_back(0);
     vec.push_back(1);
+    vec.push_back(2);
+    vec.push_back(3);
+
     std::cout << vec;
-    vec.pop_back();
+    std::cout << "testing pop_back" << std::endl;
+    std::cout << vec.pop_back() << std::endl;
+    std::cout << vec;
+    std::cout << "testing remove(1)" << std::endl;
+    std::cout << vec.remove(1) << std::endl;
     std::cout << vec;
 
     Vector<int> vec2(100);
