@@ -6,6 +6,7 @@
 #include "Vector.h"
 
 int main(int argc, char** argv) {
+
 #ifdef REVERSE
     Vector<int> bla;
     bla.push_back(10);
@@ -21,7 +22,6 @@ int main(int argc, char** argv) {
     for (auto it = bla.rbegin(), end = bla.rend(); it != end; ++it) {
         std::cout << *it << std::endl;
     }
-
     std::cout << "testing assignment operator" << std::endl;
     auto iterator = bla.begin();
     auto iterator2 = iterator;
@@ -36,7 +36,10 @@ int main(int argc, char** argv) {
     std::cout << *(iterator - 3) << std::endl;
     std::cout << "testing -= operator" << std::endl;
     std::cout << *(iterator -= 2) << std::endl;
-
+    std::cout << "testing Vector::reverse" << std::endl;
+    std::cout << bla;
+    bla.reverse();
+    std::cout << bla;
 #else
     Vector<int> vec(0);
     vec.push_back(0);

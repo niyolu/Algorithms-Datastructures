@@ -9,8 +9,10 @@
 
 #include <iterator>
 #include <exception>
+#include <cmath>
+#include <sstream>
 
-//#define REVERSE
+#define REVERSE
 
 template <typename Vector>
 class VectorIterator {
@@ -46,7 +48,7 @@ public:
         return m_ptr;
     }
 
-    ReferenceType operator*() {
+    virtual ReferenceType operator*() {
         return *m_ptr;
     }
 
@@ -198,6 +200,7 @@ template <typename T>
 class Vector {
 public:
     using ValueType = T;
+    using AbstractIterator = VectorIterator<Vector<T>>;
     using Iterator = FVectorIterator<Vector<T>>;
 #ifdef REVERSE
     using ReverseIterator = RVectorIterator<Vector<T>>;
@@ -237,7 +240,7 @@ private:
         std::size_t size = std::min(new_capacity, m_size);
 
         for (std::size_t i = 0; i < size; i++)
-            new (&new_data[i]) T(std::move(m_data[i]));    // can't assign-construct complex types with new operator
+            new (&new_data[i]) T(std::move(m_data[i]));    // can't copy-construct complex types with new operator
 
         for (std::size_t i = 0; i < size; i++)
             m_data[i].~T();
@@ -253,13 +256,13 @@ public:
 
     void push_back(const T& value) {
         if (m_size >= m_capacity)
-            reAlloc(std::max((int)(m_capacity + m_capacity / 2), (int) MIN_SIZE));
+            reAlloc(std::max((int) std::ceil(m_capacity + m_capacity / 2), (int) MIN_SIZE));
         m_data[m_size++] = value;
     }
 
     void push_back(T&& value) {
         if (m_size >= m_capacity)
-            reAlloc(std::max((int)(m_capacity + m_capacity / 2), (int) MIN_SIZE));
+            reAlloc(std::max((int) std::ceil(m_capacity + m_capacity / 2), (int) MIN_SIZE));
         m_data[m_size++] = std::move(value);
     }
 
@@ -267,7 +270,7 @@ public:
     template<typename... Args>
     T& emplace_back(Args&&... args) {
         if (m_size >= m_capacity)
-            reAlloc(std::max((int)(m_capacity + m_capacity / 2), (int) MIN_SIZE));
+            reAlloc(std::max((int) std::ceil(m_capacity + m_capacity / 2), (int) MIN_SIZE));
         new(&m_data[m_size]) T(std::forward<Args>(args)...);
         return m_data[m_size++];
     }
@@ -304,11 +307,19 @@ public:
         }
         T return_value = m_data[index];
         *this = new_vector;
+        --m_size;
         return return_value;
     }
 
     T front() const {
         return m_data[0];
+    }
+
+    void reverse() {
+        Vector<T> new_vector;
+        for (auto it = this->rbegin(), end = this->rend(); it != end; ++it)
+            new_vector.push_back(*it);
+        *this = new_vector;
     }
 
     T back() const {
@@ -357,10 +368,21 @@ public:
 
 public:
 
+    std::string to_string() const {
+        //if(!std::is_fundamental<T>::value) throw std::blatypeblaexceptionbla
+        std::ostringstream stream;
+        stream << "[ ";
+        for (auto val : *this)
+            stream << val << " ";
+        stream << "]";
+        return stream.str();
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const Vector& vec) {
-        for (auto el : vec)
-            os << el << " ";
-        return  os << std::endl << "size=" << vec.m_size << " cap=" << vec.m_capacity << std::endl << std::endl;
+        return  os << vec.to_string() << std::endl
+                << "size=" << vec.m_size
+                << " cap=" << vec.m_capacity
+                << std::endl << std::endl;
     }
 
     Iterator begin() const {
