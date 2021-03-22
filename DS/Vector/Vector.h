@@ -13,6 +13,9 @@
 #include <sstream>
 
 #define REVERSE
+#define REALLOC
+#define MOVE
+//#define DEBUG
 
 template <typename Vector>
 class VectorIterator {
@@ -64,6 +67,12 @@ public:
     bool operator!=(const VectorIterator& other) {
         return !(*this == other);
     }
+
+#ifdef DEBUG
+    PointerType get_ptr() {
+        return m_ptr;
+    }
+#endif
 };
 
 
@@ -231,40 +240,68 @@ public:
 
     ~Vector() {
         clear();
-        ::operator delete(m_data, m_capacity * sizeof(T));
+#ifdef REALLOC
+        //::operator delete(m_data, m_capacity * sizeof(T));
+#endif
     }
 
 private:
+#ifdef REALLOC
+    template<typename _type = T, std::enable_if_t<std::is_fundamental<_type>::value, int> = 0>
     void reAlloc(std::size_t new_capacity) {
-        T* new_data = (T*) ::operator new(new_capacity * sizeof(T));
-        std::size_t size = std::min(new_capacity, m_size);
+        T* new_data = (T*)::operator new(new_capacity * sizeof(T));
+        m_size = std::min(new_capacity, m_size);
 
-        for (std::size_t i = 0; i < size; i++)
+        for (std::size_t i = 0; i < m_size; i++)
             new (&new_data[i]) T(std::move(m_data[i]));    // can't copy-construct complex types with new operator
 
-        for (std::size_t i = 0; i < size; i++)
+        for (std::size_t i = 0; i < m_size; i++)
             m_data[i].~T();
 
         if (m_size > 0)
-            ::operator delete(m_data, m_capacity * sizeof(T));
-
+            ::operator delete(m_data, new_capacity * sizeof(T));
         m_data = new_data;
         m_capacity = new_capacity;
     }
 
+    // safely allocate complex types, but no fields
+    template<typename _type = T, std::enable_if_t<!std::is_fundamental<_type>::value, int> = 0>
+    void reAlloc(std::size_t new_capacity) {
+        T* new_data = new T[new_capacity];
+        if (new_capacity < m_size) {
+            m_size = new_capacity;
+        }
+        for (size_t i = 0; i < m_size; ++i)
+            new_data[i] = m_data[i];
+        if (m_size > 0)
+            delete[] m_data;
+        m_data = new_data;
+        m_capacity = new_capacity;
+    }
+#endif
+
 public:
 
+#ifdef MOVE
     void push_back(const T& value) {
         if (m_size >= m_capacity)
             reAlloc(std::max((int) std::ceil(m_capacity + m_capacity / 2), (int) MIN_SIZE));
         m_data[m_size++] = value;
     }
 
+
     void push_back(T&& value) {
         if (m_size >= m_capacity)
             reAlloc(std::max((int) std::ceil(m_capacity + m_capacity / 2), (int) MIN_SIZE));
         m_data[m_size++] = std::move(value);
     }
+#else
+    void push_back(const T& value) {
+        if (m_size >= m_capacity)
+            reAlloc(std::max((int) std::ceil(m_capacity + m_capacity / 2), (int) MIN_SIZE));
+        m_data[m_size++] = value;
+    }
+#endif
 
     // variadic templates
     template<typename... Args>
@@ -286,9 +323,15 @@ public:
     }
 
     void clear() {
+#if 0
         for (auto& value : *this)
             value.~T();
+#else
+        for (std::size_t i = 0; i < m_size; ++i)
+            m_data[i].~T();
+#endif
         m_size = 0;
+        // m_capacity = 0;
     }
 
     T remove(std::size_t index) {
@@ -296,7 +339,7 @@ public:
             std::string msg = "m_data[" + std::to_string(index) + "], cap=" + std::to_string(m_capacity);
             throw std::out_of_range(msg);
         }
-        // Todo same problem as below in Vector::back
+        //TODO same problem as below in Vector::back
         if (index == m_size - 1)
             return pop_back();
 
@@ -366,16 +409,13 @@ public:
         return *this;
     }
 
-public:
-
     std::string to_string() const {
         //if(!std::is_fundamental<T>::value) throw std::blatypeblaexceptionbla
         std::ostringstream stream;
-        stream << "[ ";
         for (auto val : *this)
-            stream << val << " ";
-        stream << "]";
-        return stream.str();
+            stream << val << ", ";
+        std::string msg = stream.str();
+        return "[ " + msg.substr(0, msg.length()-2) + " ]";
     }
 
     friend std::ostream& operator<<(std::ostream& os, const Vector& vec) {

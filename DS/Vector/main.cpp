@@ -7,6 +7,8 @@
 
 int main(int argc, char** argv) {
 
+
+#if 1
 #ifdef REVERSE
     Vector<int> bla;
     bla.push_back(10);
@@ -19,7 +21,15 @@ int main(int argc, char** argv) {
     bla.push_back(80);
     bla.push_back(90);
     bla.push_back(100);
-    for (auto it = bla.rbegin(), end = bla.rend(); it != end; ++it) {
+    std::cout << "testing rend" << std::endl;
+    std::cout << *bla.rend() << std::endl;
+    std::cout << "testing rbegin" << std::endl;
+    std::cout << *bla.rbegin() << std::endl;
+    std::cout << "testing end" << std::endl;
+    std::cout << *bla.end() << std::endl;
+    std::cout << "testing begin" << std::endl;
+    std::cout << *bla.begin() << std::endl;
+    for (auto it = bla.rbegin(), end = bla.rend(); it != end; it++) {
         std::cout << *it << std::endl;
     }
     std::cout << "testing assignment operator" << std::endl;
@@ -87,5 +97,11 @@ int main(int argc, char** argv) {
     std::cout << *vec4.end() << std::endl;
     std::cout << *(vec4.end() - 1) << std::endl;
 #endif
+#endif
+    std::cout << "testing string vector" << std::endl;
+    Vector<std::string> string_vector;
+    string_vector.push_back("just some boring test string");
+    string_vector.emplace_back("unfortunately another one");
+    std::cout << string_vector << std::endl;
     return 0;
 }
