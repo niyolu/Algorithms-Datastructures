@@ -43,7 +43,23 @@ int main() {
     std::cout << de;
     std::cout << "testing rotate(1)" << std::endl;
     de.rotate(1);
+    std::cout << de;std::cout << "testing rotate(-3)" << std::endl;
+    de.rotate(-3);
     std::cout << de;
+#endif
+
+#if 0
+    std::cout << "testing copy constructor" << std::endl;
+    Vector<int> vec2;
+    Vector<Vector<int>> vecvec;
+    vecvec.push_back(vec2);
+    vecvec.push_back(vec2);
+    vecvec.push_back(vec2);
+
+    Deque<Vector<int>> de2(vecvec);
+    de2.push_front(vec2);
+    de2.push_front(vec2);
+    std::cout << de2;
 #endif
     return 0;
 }

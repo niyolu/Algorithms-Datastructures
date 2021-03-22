@@ -1,5 +1,5 @@
 //
-// Created by NiJoL on 16.03.2021.
+// Created by Nils Lübben on 16.03.2021.
 //
 
 #ifndef DEQUE_DEQUE_H
@@ -199,30 +199,17 @@ public:
 
 #ifdef REVERSE
     Iterator begin() {
-
         VectorIterator *L_it, *R_it, *current, *end;
-        /*VectorIterator
-        L_begin = m_left.rbegin(),
-        R_begin = m_right.begin(),
-        L_end = m_left.rend(),
-        R_end = m_right.end();*/
-        VectorRIterator
-        L_begin = m_left.rbegin(),
-        L_end = m_left.rend();
-        VectorFIterator
-        R_begin = m_right.begin(),
-        R_end = m_right.end();
-
         if (!m_left.empty()) {
-            L_it = &L_begin;
-            R_it = &R_begin;
-            current = &L_begin;
-            end = &L_end;
+            L_it = new VectorRIterator(&(*m_left.rbegin()));
+            R_it = new VectorFIterator(&(*m_right.begin()));
+            current = new VectorRIterator(&(*m_left.rbegin()));
+            end = new VectorFIterator (&(*m_left.rend()));
         }
         else {
             L_it = nullptr;
-            R_it = &R_begin;
-            current = &R_begin;
+            R_it = new VectorFIterator(&(*m_right.begin()));
+            current = new VectorFIterator(&(*m_right.begin()));
             end = nullptr;
         }
         return Iterator(L_it, R_it, current, end);
