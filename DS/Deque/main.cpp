@@ -12,7 +12,9 @@ int main() {
         de.push_front(2);
     }
     de.push_front(-2);
-    std::cout <<  *de.begin() << std::endl; // seems to work until operator*. Then suddenly the pointer points somewhere
+    std::cout << de;
+    auto it = de.begin();
+    std::cout <<  *it << std::endl; // seems to work until operator*. Then suddenly the pointer points somewhere
 #else
     Vector<int> vec;
     vec.push_back(0);
@@ -20,16 +22,28 @@ int main() {
     Deque<int> de(vec);
     std::cout << de.front() << std::endl;
     std::cout << de.back() << std::endl;
+    std::cout << "testing the push functions" << std::endl;
     de.push_front(-1);
     de.push_back(2);
     std::cout << de[0] << std::endl;
     std::cout << de[1] << std::endl;
     std::cout << de[2] << std::endl;
     std::cout << de[3] << std::endl;
-    std::cout << de.front() << std::endl;
-    std::cout << de.back() << std::endl;
-    de.pop_back();
-    de.pop_front();
+    std::cout << "front=" << de.front() << std::endl;
+    std::cout << "back=" << de.back() << std::endl;
+    std::cout << de;
+    std::cout << "testing the pop's" << std::endl;
+    std::cout <<  de.pop_front() << std::endl;
+    std::cout <<  de.pop_back() << std::endl;
+    std::cout << de;
+    std::cout << "filling up deque again:" << std::endl;
+    de.push_front(-1);
+    de.push_front(-2);
+    de.push_back(2);
+    std::cout << de;
+    std::cout << "testing rotate(1)" << std::endl;
+    de.rotate(1);
+    std::cout << de;
 #endif
     return 0;
 }

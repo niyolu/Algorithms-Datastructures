@@ -10,10 +10,12 @@
 #include "../Vector/Vector.h"
 #include <cmath>
 
+//#define DREVERSE
+
 template <typename Deque>
 class DequeIterator {
 public:
-    using VectorIterator = typename Deque::Vector::Iterator;
+    using VectorIterator = typename Deque::Vector::AbstractIterator;
     using ValueType = typename Deque::Vector::ValueType;
     using PointerType = ValueType*;
     using ReferenceType = ValueType&;
@@ -62,7 +64,7 @@ public:
 template <typename Deque>
 class FDequeIterator : public DequeIterator<Deque> {
 public:
-    using VectorIterator = typename Deque::Vector::Iterator;
+    using VectorIterator = typename Deque::Vector::AbstractIterator;
     using ValueType = typename Deque::Vector::ValueType;
     using PointerType = ValueType*;
     using ReferenceType = ValueType&;
@@ -99,10 +101,13 @@ template <typename T>
 class Deque {
 public:
     using Vector = Vector<T>;
-    using VectorIterator = typename Vector::Iterator;
+    using VectorIterator = typename Vector::AbstractIterator ;
+    using VectorFIterator = typename Vector::Iterator;
+    using VectorRIterator = typename Vector::ReverseIterator;
     using Iterator = FDequeIterator<Deque<T>>;
-#ifdef REVERSE
+#ifdef DREVERSE
     using ReverseIterator = RDequeIterator<Vector>;
+#elif defined REVERSE
     using ReverseVectorIterator = typename Vector::ReverseIterator;
 #endif
 protected:
@@ -141,8 +146,11 @@ public:
         m_right.emplace_back(value);
     }
 
-    void pop_back() {
-        m_right.pop_back();
+    T pop_back() {
+        if (m_right.empty()) {
+            return m_left.remove(0);
+        }
+        return m_right.pop_back();
     }
 
     void push_front(const T& value) {
@@ -153,13 +161,28 @@ public:
         m_left.emplace_back(value);
     }
 
-    void pop_front() {
-        m_left.pop_back();
+    T pop_front() {
+        if (m_left.empty()) {
+            return m_right.remove(0);
+        }
+        return m_left.pop_back();
     }
 
     void clear() {
         m_right.clear();
         m_left.clear();
+    }
+
+    void rotate(int rotations) {
+        if (rotations == 0) return;
+        if (rotations > 0) {    // a,b,c -1> c,a,b
+            for (unsigned int i = 0; i < rotations; i++)
+                this->push_front(this->pop_back());
+        }
+        else {                  // a,b,c -(-1)> b,c,a
+            for (unsigned int i = 0; i < -rotations; i++)
+                this->push_back(this->pop_front());
+        }
     }
 
     std::size_t Size() {
@@ -174,32 +197,37 @@ public:
         return m_left.empty() && m_right.empty();
     }
 
-    Iterator begin() const {
+#ifdef REVERSE
+    Iterator begin() {
 
         VectorIterator *L_it, *R_it, *current, *end;
-        VectorIterator
-        L_begin = m_left.begin(),
+        /*VectorIterator
+        L_begin = m_left.rbegin(),
         R_begin = m_right.begin(),
-        L_end = m_left.end(),
+        L_end = m_left.rend(),
+        R_end = m_right.end();*/
+        VectorRIterator
+        L_begin = m_left.rbegin(),
+        L_end = m_left.rend();
+        VectorFIterator
+        R_begin = m_right.begin(),
         R_end = m_right.end();
 
         if (!m_left.empty()) {
-
             L_it = &L_begin;
             R_it = &R_begin;
             current = &L_begin;
             end = &L_end;
-            //return Iterator(&(m_left.begin()), &(m_right.begin()), &(m_left.begin()), &(m_left.end()));
         }
         else {
             L_it = nullptr;
             R_it = &R_begin;
             current = &R_begin;
             end = nullptr;
-            // return Iterator(nullptr, &(m_right.begin()), &(m_right.begin()), nullptr);
         }
         return Iterator(L_it, R_it, current, end);
     }
+#endif
     /*
     Iterator end() const {
         if (m_right.empty())
@@ -208,4 +236,10 @@ public:
             return Iterator(&(m_left.begin()), &(m_right.begin()), &(m_right.end()), &(m_left.end()));
     }
      */
+
+    friend std::ostream& operator<<(std::ostream& os, const Deque& de) {
+        Deque::Vector L_reverse = de.m_left;
+        L_reverse.reverse();
+        return os << L_reverse.to_string() << " | " << de.m_right.to_string() << std::endl << std::endl;
+    }
 };
