@@ -30,15 +30,11 @@ public:
 
     virtual DequeIterator& operator++() = 0;
 
-#if 0
-
     const virtual DequeIterator& operator++(int) = 0;
 
     virtual DequeIterator& operator--() = 0;
 
     const virtual DequeIterator& operator--(int) = 0;
-
-#endif
 
     ReferenceType operator[](std::size_t index) {
         return (*m_current)[index];
@@ -53,7 +49,7 @@ public:
     }
 
     bool operator==(const VectorIterator& other) {
-        return m_current == other.current;
+        return *m_current == *other.current;
     }
 
     bool operator!=(const VectorIterator& other) {
@@ -89,11 +85,39 @@ public:
     }
 
     FDequeIterator& operator++() {
-        if (this->m_L_iterator != nullptr && this->m_current + 1 == this->m_end)
+        if (this->m_L_iterator == nullptr && this->m_R_iterator == nullptr) {
+            std::string msg = "iterator to empty deque attempted to traverse\n";
+            throw std::out_of_range(msg);
+        }
+        if ((*this->m_current) + 1 == *(this->m_end))
             this->m_current = this->m_R_iterator;
         else
-            this->m_current++;
+            ++(*(this->m_current));
         return *this;
+    }
+
+    const FDequeIterator& operator++(int) {
+        FDequeIterator temp = *this;
+        ++(*this);
+        return temp;
+    }
+
+    FDequeIterator& operator--() {
+        if (this->m_L_iterator == nullptr && this->m_R_iterator == nullptr) {
+            std::string msg = "iterator to empty deque attempted to traverse\n";
+            throw std::out_of_range(msg);
+        }
+        if (this->m_R_iterator != nullptr && (*this->m_current) - 1 == *(this->m_end))
+            this->m_current = this->m_L_iterator;
+        else
+            --(*(this->m_current));
+        return *this;
+    }
+
+    const FDequeIterator& operator--(int) {
+        FDequeIterator temp = *this;
+        --(*this);
+        return temp;
     }
 };
 
@@ -204,7 +228,7 @@ public:
             L_it = new VectorRIterator(&(*m_left.rbegin()));
             R_it = new VectorFIterator(&(*m_right.begin()));
             current = new VectorRIterator(&(*m_left.rbegin()));
-            end = new VectorFIterator (&(*m_left.rend()));
+            end = new VectorFIterator(&(*m_left.rend()));
         }
         else {
             L_it = nullptr;
@@ -214,16 +238,25 @@ public:
         }
         return Iterator(L_it, R_it, current, end);
     }
-#endif
-    /*
-    Iterator end() const {
-        if (m_right.empty())
-            return Iterator(&(m_left.begin()), nullptr, &(m_left.end()), nullptr);
-        else
-            return Iterator(&(m_left.begin()), &(m_right.begin()), &(m_right.end()), &(m_left.end()));
-    }
-     */
 
+
+    Iterator end() {
+        VectorIterator *L_it, *R_it, *current, *end;
+        if (m_right.empty()) {
+            L_it = new VectorFIterator(&(*m_left.end()));
+            R_it = nullptr;
+            current = new VectorFIterator(&(*m_left.begin()));
+            end = nullptr;
+        }
+        else {
+            L_it = new VectorFIterator(&(*m_left.rbegin()));
+            R_it = new VectorFIterator(&(*m_right.begin()));
+            current = new VectorFIterator(&(*(m_right.end() - 1)));
+            end = new VectorFIterator(&(*(m_right.begin() - 1)));
+        }
+        return Iterator(L_it, R_it, current, end);
+    }
+#endif
     friend std::ostream& operator<<(std::ostream& os, const Deque& de) {
         Deque::Vector L_reverse = de.m_left;
         L_reverse.reverse();

@@ -3,18 +3,38 @@
 
 int main() {
 #if 1
-    Deque<int> de;
+    Deque<std::string> de;
+    de.push_back("R_begin");
     for (int i = 0; i < 10; ++i) {
-        de.push_back(1);
+        de.push_back("right");
     }
-    de.push_back(-1);
+    de.push_back("R_end-1");
+
+    de.push_front("L_begin");
     for (int i = 0; i < 10; ++i) {
-        de.push_front(2);
+        de.push_front("left");
     }
-    de.push_front(-2);
+    de.push_front("L_end-1");
+    std::cout << "testing Deque::begin()" << std::endl;
     std::cout << de;
     auto it = de.begin();
     std::cout <<  *it << std::endl; // seems to work until operator*. Then suddenly the pointer points somewhere
+    std::cout << "testing operator++()" << std::endl;
+    for(int _ = 0; _ < de.Size() - 2; ++_) {
+        std::cout << *++it << std::endl;
+    }
+    it = de.begin();
+    std::cout << "testing operator++(int)" << std::endl;
+    for(int _ = 0; _ < de.Size() - 2; ++_) {
+        std::cout << *++it << std::endl;
+    }
+    std::cout << "testing Deque::end()" << std::endl;
+    auto it2 = de.end();
+    for(int _ = 0; _ < de.Size() - 2; ++_) {
+        std::cout << *(--it2) << std::endl;
+    }
+    /*for(auto val : de)
+        std::cout << val;*/
 #else
     Vector<int> vec;
     vec.push_back(0);
