@@ -33,8 +33,9 @@ int main() {
     for(int _ = 0; _ < de.Size() - 2; ++_) {
         std::cout << *(--it2) << std::endl;
     }
-    /*for(auto val : de)
-        std::cout << val;*/
+    std::cout << "testing enhanced-for" << std::endl;
+    for(auto val : de)
+        std::cout << val << std::endl;
 #else
     Vector<int> vec;
     vec.push_back(0);

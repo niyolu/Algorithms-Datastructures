@@ -48,11 +48,11 @@ public:
         return **m_current;
     }
 
-    bool operator==(const VectorIterator& other) {
-        return *m_current == *other.current;
+    bool operator==(const DequeIterator& other) {
+        return *m_current == *other.m_current;
     }
 
-    bool operator!=(const VectorIterator& other) {
+    bool operator!=(const DequeIterator& other) {
         return !(*this == other);
     }
 };
@@ -209,20 +209,20 @@ public:
         }
     }
 
-    std::size_t Size() {
+    std::size_t Size() const {
         return m_left.Size() + m_right.Size();
     }
 
-    std::size_t Capacity() {
+    std::size_t Capacity() const {
         return m_left.Capacity() + m_right.Capacity();
     }
 
-    bool empty() {
+    bool empty() const {
         return m_left.empty() && m_right.empty();
     }
 
 #ifdef REVERSE
-    Iterator begin() {
+    Iterator begin() const {
         VectorIterator *L_it, *R_it, *current, *end;
         if (!m_left.empty()) {
             L_it = new VectorRIterator(&(*m_left.rbegin()));
@@ -240,7 +240,7 @@ public:
     }
 
 
-    Iterator end() {
+    Iterator end() const {
         VectorIterator *L_it, *R_it, *current, *end;
         if (m_right.empty()) {
             L_it = new VectorFIterator(&(*m_left.end()));
@@ -251,15 +251,33 @@ public:
         else {
             L_it = new VectorFIterator(&(*m_left.rbegin()));
             R_it = new VectorFIterator(&(*m_right.begin()));
-            current = new VectorFIterator(&(*(m_right.end() - 1)));
+            current = new VectorFIterator(&(*(m_right.end())));
             end = new VectorFIterator(&(*(m_right.begin() - 1)));
         }
         return Iterator(L_it, R_it, current, end);
     }
+
+    std::string to_string() const {
+        std::ostringstream stream;
+        for (auto val : *this)
+            stream << val << ", ";
+        std::string msg(stream.str());
+        return "[ " + msg.substr(0, msg.length()-2) + " ]";
+    }
+
 #endif
     friend std::ostream& operator<<(std::ostream& os, const Deque& de) {
-        Deque::Vector L_reverse = de.m_left;
-        L_reverse.reverse();
-        return os << L_reverse.to_string() << " | " << de.m_right.to_string() << std::endl << std::endl;
+        std::string msg(de.to_string());
+        if (!de.m_left.empty()) {
+            std::string::size_type index = 0, end = std::string::npos ;
+            std::size_t size = de.m_left.Size();
+            // [0, 1, 2, 3 | 4, 5, 6, 7]
+            for (int _ = 0; _ <  size && (index = msg.find(", ", index + 1)) != end; _++);
+            if (index != end)
+                msg.replace(index, 2, " | ");
+        }
+        return os << msg << std::endl
+               << "size=" << de.Size()
+               << std::endl << std::endl;
     }
 };
