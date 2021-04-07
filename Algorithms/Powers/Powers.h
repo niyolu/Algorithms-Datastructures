@@ -52,7 +52,7 @@ ll pow_it(ll a, ll b) {
     ll result = 1;
     while (b > 0) {
         ctr_it++;
-        if (b % 2 == 1) result *= a;
+        if ((b & 0x1) == 0x1) result *= a;
         a *= a;
         b /= 2;
     }
@@ -61,4 +61,3 @@ ll pow_it(ll a, ll b) {
 
 // this implements the binary exponentiation algorithm
 // b = 11 = 1011
-//ll pow_bin
