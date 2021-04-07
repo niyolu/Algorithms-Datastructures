@@ -79,6 +79,7 @@ public:
 template <typename Vector>
 class FVectorIterator : public VectorIterator<Vector> {
 public:
+    using _base = VectorIterator<Vector>;
     using ValueType = typename Vector::ValueType;
     using PointerType = ValueType*;
     using ReferenceType = ValueType&;
@@ -89,7 +90,7 @@ public:
         this->m_ptr = nullptr;
     }
 
-    FVectorIterator(const FVectorIterator& other) {
+    FVectorIterator(const _base& other) {
         this->m_ptr = other.m_ptr;
     }
 
@@ -145,6 +146,7 @@ template <typename Vector>
 class RVectorIterator : public VectorIterator<Vector> {
 public:
 
+    using _base = VectorIterator<Vector>;
     using ValueType = typename Vector::ValueType;
     using PointerType = ValueType*;
     using ReferenceType = ValueType&;
@@ -153,7 +155,7 @@ public:
         this->m_ptr = nullptr;
     }
 
-    RVectorIterator(const RVectorIterator& other) {
+    RVectorIterator(const _base& other) {
         this->m_ptr = other.m_ptr;
     }
 
@@ -247,6 +249,7 @@ public:
 
 private:
 #ifdef REALLOC
+    // conditional overloading to call only on primitive types
     template<typename _type = T, std::enable_if_t<std::is_fundamental<_type>::value, int> = 0>
     void reAlloc(std::size_t new_capacity) {
         T* new_data = (T*)::operator new(new_capacity * sizeof(T));
@@ -282,24 +285,17 @@ private:
 
 public:
 
-#ifdef MOVE
     void push_back(const T& value) {
         if (m_size >= m_capacity)
             reAlloc(std::max((int) std::ceil(m_capacity + m_capacity / 2), (int) MIN_SIZE));
         m_data[m_size++] = value;
     }
 
-
+#ifdef MOVE
     void push_back(T&& value) {
         if (m_size >= m_capacity)
             reAlloc(std::max((int) std::ceil(m_capacity + m_capacity / 2), (int) MIN_SIZE));
         m_data[m_size++] = std::move(value);
-    }
-#else
-    void push_back(const T& value) {
-        if (m_size >= m_capacity)
-            reAlloc(std::max((int) std::ceil(m_capacity + m_capacity / 2), (int) MIN_SIZE));
-        m_data[m_size++] = value;
     }
 #endif
 
@@ -323,7 +319,7 @@ public:
     }
 
     void clear() {
-#if 0
+#if 1
         for (auto& value : *this)
             value.~T();
 #else
@@ -331,7 +327,6 @@ public:
             m_data[i].~T();
 #endif
         m_size = 0;
-        // m_capacity = 0;
     }
 
     T remove(std::size_t index) {
@@ -414,7 +409,7 @@ public:
         std::ostringstream stream;
         for (auto val : *this)
             stream << val << ", ";
-        std::string msg = stream.str();
+        std::string msg(stream.str());
         return "[ " + msg.substr(0, msg.length()-2) + " ]";
     }
 
@@ -434,11 +429,11 @@ public:
     }
 
 #ifdef REVERSE
-    ReverseIterator rbegin() {
+    ReverseIterator rbegin() const {
         return ReverseIterator(m_data + (m_size - 1));
     }
 
-    ReverseIterator rend() {
+    ReverseIterator rend() const {
         return ReverseIterator(m_data - 1);
     }
 #endif

@@ -11,6 +11,10 @@ iterator
 -
 exception
 -
+cmath
+-
+sstream
+-
 
 C:/Dev/Algorithms-Datastructures/DS/Vector/main.cpp
 iostream
