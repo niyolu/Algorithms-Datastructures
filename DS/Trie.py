@@ -29,22 +29,29 @@ class Trie:
     def find(self, word):
         current_node = self.root
         for letter in word:
-            if letter in current_node.children:
-                current_node = current_node.children[letter]
-            else:
+            if not letter in current_node.children:
                 return False
+            current_node = current_node.children[letter]
         return current_node.isword
         
     def get_words(self):
         words = []
         self.root.summarize(words)
         return words
-            
+   
+    def __contains__(self, word):
+        return self.find(word)
+    
+    def __repr__(self):
+        words = self.get_words()
+        return ", ".join(map(str, words))
+        
+        
 def demo():  
     trie = Trie(["Hagrid", "Harry", "Hermoine"])
-    print(trie.find("Harry"))
+    print("Harry" in trie)
     print(trie.find("Harald"))
-    print(trie.get_words())
+    print(trie)
 
 if __name__ == "__main__":
     demo()
