@@ -5,7 +5,7 @@
 #include "Powers.h"
 
 int main() {
-
+#if 0
     std::cout << "-----------------------------------------" << std::endl;
     std::cout << "testing pow_naive!\n";
     std::cout << pow_naive(2, 3) << std::endl;
@@ -46,4 +46,14 @@ int main() {
     ctr_it = 0;
     std::cout << pow_it(5, 20) << std::endl;
     std::cout << "steps : " << ctr_it << std::endl;
+#endif
+
+    for (int i = 0; i < 100; i++) {
+        printf("10^i = %i\n", pow_it(10,i));
+
+    }
+
+
+
+    return 0;
 }

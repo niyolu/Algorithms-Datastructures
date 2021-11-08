@@ -2,7 +2,7 @@
 #include "Deque.h"
 
 int main() {
-#if 1
+#if 0
     Deque<std::string> de;
     de.push_back("R_begin");
     for (int i = 0; i < 10; ++i) {
@@ -36,7 +36,7 @@ int main() {
     std::cout << "testing enhanced-for" << std::endl;
     for(auto val : de)
         std::cout << val << std::endl;
-#else
+#elif 0
     Vector<int> vec;
     vec.push_back(0);
     vec.push_back(1);
@@ -78,9 +78,10 @@ int main() {
     vecvec.push_back(vec2);
 
     Deque<Vector<int>> de2(vecvec);
-    de2.push_front(vec2);
-    de2.push_front(vec2);
-    std::cout << de2;
+    de2.push_front(vec2);de2.push_front(vec2);
 #endif
-    return 0;
+
+
+
+return 0;
 }

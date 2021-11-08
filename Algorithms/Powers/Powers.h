@@ -50,9 +50,9 @@ ll pow_rec2(ll a, ll b) {
 
 ll pow_it(ll a, ll b) {
     ll result = 1;
-    while (b > 0) {
+    while (b) {
         ctr_it++;
-        if ((b & 0x1) == 0x1) result *= a;
+        if (b & 0x1) result *= a;
         a *= a;
         b /= 2;
     }

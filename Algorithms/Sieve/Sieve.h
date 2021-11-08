@@ -11,9 +11,9 @@
 
 std::vector<int> sieve(unsigned int n) {
     std::vector<bool> isPrime(n, true);
-    for (int i = 2; i*i < n; i++) {
+    for (int i = 2; i*i <= n; i++) {
         if (!isPrime[i - 1]) continue;
-        for (int j = 2*i; j <= n; j += i)
+        for (int j = i*i; j <= n; j += i)
             isPrime[j - 1] = false;
     }
     std::vector<int> primes;
@@ -22,4 +22,5 @@ std::vector<int> sieve(unsigned int n) {
             primes.push_back(i + 1);
     return primes;
 }
+
 #endif //SIEVE_SIEVE_H
