@@ -1,6 +1,10 @@
-//
-// Created by NiJoL on 08.04.2021.
-//
+/*
+ *
+ *
+ * TODO: do it right ffs
+ *
+ *
+ * */
 
 #ifndef SIEVE_SEGMENTED_SIEVE_H
 #define SIEVE_SEGMENTED_SIEVE_H
