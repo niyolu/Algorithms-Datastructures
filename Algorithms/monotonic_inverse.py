@@ -2,6 +2,9 @@ from math import sin,pi
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+aiwngfsoigna sg
+
 def bisect(f, y, start, stop, eps):
     middle = (stop - start) / 2 + start
     if abs(middle - stop) <= eps and abs(middle - start) <= eps:
