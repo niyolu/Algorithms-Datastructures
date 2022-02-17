@@ -3,7 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-aiwngfsoigna sg
 
 def bisect(f, y, start, stop, eps):
     middle = (stop - start) / 2 + start
