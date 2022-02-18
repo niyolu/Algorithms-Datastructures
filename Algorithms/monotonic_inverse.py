@@ -28,8 +28,8 @@ def inverse(f, y, f_range):
     return inv_x
 
 
-def f(X):
-    return sin(X) if not isinstance(X, Iterable) else [sin(x) for x in X]
+def f(X, func):
+    return func(X) if not isinstance(X, Iterable) else [func(x) for x in X]
 
 
 print(f"inverse at {0.5} = {inverse(f, 0.5, [0, pi/2])}")
