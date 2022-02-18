@@ -9,7 +9,6 @@ def bisect(f, y, start, stop, eps):
     if abs(middle - stop) <= eps and abs(middle - start) <= eps:
         return None
     y_guess = f(middle)
-    print(y_guess, middle)
     if abs(y_guess - y) <= eps:
         return middle
     if  y_guess < y:
