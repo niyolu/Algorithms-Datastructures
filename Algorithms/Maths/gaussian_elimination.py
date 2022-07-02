@@ -1,10 +1,9 @@
 import numpy as np
 
 def gaussian_elimination(A,b):
-    
     M = np.hstack((A, b.reshape(-1, 1))).astype(np.float32)
     almost_zero = lambda x: np.abs(x) < np.finfo(np.float32).eps
-    n = M.shape[0]
+    n = M.shape[0] 
     
     for i in range(n-1):    
         # swap zero-pivot if necessary
@@ -17,7 +16,7 @@ def gaussian_elimination(A,b):
         norm[almost_zero(norm)] = 1.0
         M[i:] = M[i:] / norm
         
-        # ignore entries in pivot column that are zero
+        # ignore zero-entries in pivot column
         elim = np.nonzero(M[i+1:, i])[0] + (i + 1)
         M[elim] = M[elim] - M[i]
 
@@ -31,7 +30,7 @@ def gaussian_elimination(A,b):
         norm[almost_zero(norm)] = 1.0
         M[:i+1] = M[:i+1] / norm
     
-        # ignore entries in pivot column that are zero
+        # ignore zero-entries in pivot column
         elim = np.nonzero(M[:i, i])[0]
         M[elim] = M[elim] - M[i]
         
@@ -44,13 +43,27 @@ def array_sim(a,b):
     bigger = np.maximum(a,b)
     return np.nan_to_num(diff/bigger)
 
+from time import perf_counter
+
 def sobelTC():
     A = np.array(((10,10,110),(10,110,110),(10,10,10)))
     x = np.array([-1., 0., 1.])
     b_true = np.array((100,100,0))
     b_calc = A @ x
     print(A,x,b_true,b_calc, sep="\n")
+    start_GE = perf_counter()
     result = gaussian_elimination(A,b_true)
+    elapsed_GE = perf_counter() - start_GE
+    
+    start_np = perf_counter()
+    result_np = np.linalg.solve(A,b_true)
+    elapsed_np = perf_counter() - start_GE
+    
+    print("GE : ", elapsed_GE, "seconds")
+    print("np : ", elapsed_np, "seconds")
+    
+    
+    
     print("GE", result, x)
     print("diff", array_sim(result, x))
     try:
@@ -66,7 +79,16 @@ def someTC():
     x = np.array((5,7,9))
     b = A@x
     print(A,x,b, sep="\n")
+    start_GE = perf_counter()
     result = gaussian_elimination(A,b)
+    elapsed_GE = perf_counter() - start_GE
+    
+    start_np = perf_counter()
+    result_np = np.linalg.solve(A,b)
+    elapsed_np = perf_counter() - start_GE
+    
+    print("GE : ", elapsed_GE, "seconds")
+    print("np : ", elapsed_np, "seconds")
     print(result)
     print("GE", result, x)
     print("diff", array_sim(result, x))
