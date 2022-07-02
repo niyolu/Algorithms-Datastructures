@@ -8,7 +8,7 @@ def gaussian_elimination(A,b):
     for i in range(n-1):    
         # swap zero-pivot if necessary
         if almost_zero(M[i, i]):
-            new_pivot = np.nonzero(M[i + 1:,i])[0][0] + (i + 1)
+            new_pivot = np.nonzero(M[i+1:,i])[0][0] + (i+1)
             M[i], M[new_pivot] = M[new_pivot], M[i]
             
         # normalize with pivotal column
@@ -17,7 +17,7 @@ def gaussian_elimination(A,b):
         M[i:] = M[i:] / norm
         
         # ignore zero-entries in pivot column
-        elim = np.nonzero(M[i+1:, i])[0] + (i + 1)
+        elim = np.nonzero(M[i+1:, i])[0] + (i+1)
         M[elim] = M[elim] - M[i]
 
     
@@ -127,8 +127,6 @@ def linalg_benchmark():
     else:
         return True
     
-    
-
 def main():
     linalg_benchmark()
     print(sobelTC())

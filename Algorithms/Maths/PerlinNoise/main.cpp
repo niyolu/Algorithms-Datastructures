@@ -21,7 +21,7 @@ double smoothstep(double edge0, double edge1, double x) {
 template<typename T, unsigned int dim>
 std::vector<T> random_vector(unsigned int MIN, unsigned int MAX, long unsigned int seed = 421337) {
     std::mt19937 mersenne_engine(seed);
-    std::uniform_real_distribution<double> dist(MIN, MAX);
+    std::uniform_real_distribution<T> dist(MIN, MAX);
 
     auto gen = [&dist, &mersenne_engine]() {
         return dist(mersenne_engine);
