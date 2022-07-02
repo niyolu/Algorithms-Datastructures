@@ -46,6 +46,7 @@ def array_sim(a,b):
 from time import perf_counter
 
 def sobelTC():
+    print("sobel TC")
     A = np.array(((10,10,110),(10,110,110),(10,10,10)))
     x = np.array([-1., 0., 1.])
     b_true = np.array((100,100,0))
@@ -57,7 +58,7 @@ def sobelTC():
     
     start_np = perf_counter()
     result_np = np.linalg.solve(A,b_true)
-    elapsed_np = perf_counter() - start_GE
+    elapsed_np = perf_counter() - start_np
     
     print("GE : ", elapsed_GE, "seconds")
     print("np : ", elapsed_np, "seconds")
@@ -74,7 +75,8 @@ def sobelTC():
     else:
         return True
 
-def someTC(): 
+def someTC():
+    print("rando TC")
     A = np.array(((14,21,11),(13,12,17),(8,9,10)))
     x = np.array((5,7,9))
     b = A@x
@@ -85,7 +87,7 @@ def someTC():
     
     start_np = perf_counter()
     result_np = np.linalg.solve(A,b)
-    elapsed_np = perf_counter() - start_GE
+    elapsed_np = perf_counter() - start_np
     
     print("GE : ", elapsed_GE, "seconds")
     print("np : ", elapsed_np, "seconds")
@@ -100,6 +102,36 @@ def someTC():
     else:
         return True
 
-if __name__ == "__main__":
+def linalg_benchmark():
+    print("linalg bench")
+    A = np.random.randn(100, 100)
+    x = np.random.randn(100)
+    b = A@x
+    
+    start_ge = perf_counter()
+    result_ge = gaussian_elimination(A,b)
+    elapsed_ge = perf_counter() - start_ge
+    
+    start_np = perf_counter()
+    result_np = np.linalg.solve(A,b)
+    elapsed_np = perf_counter() - start_np
+    
+    print("GE : ", elapsed_ge, "seconds")
+    print("np : ", elapsed_np, "seconds")
+    
+    try:
+        np.testing.assert_array_almost_equal(result_ge, result_np, decimal=3)
+    except AssertionError as e:
+        print(e)
+        return False
+    else:
+        return True
+    
+    
+
+def main():
+    linalg_benchmark()
     print(sobelTC())
     print(someTC())
+if __name__ == "__main__":
+    main()
