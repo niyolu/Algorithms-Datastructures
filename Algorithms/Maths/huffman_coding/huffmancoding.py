@@ -28,7 +28,7 @@ class HuffmanTree:
 
     @classmethod
     def __init__(self, symbols, weights):
-        queue = list(map(HuffmanTree.Node, zip(symbols,weights)))
+        queue = list(map(HuffmanTree.Node, zip(symbols, weights)))
         hq.heapify(queue)
 
         while len(queue) > 1:
@@ -44,19 +44,19 @@ class HuffmanTree:
 
 
     def encode(self):
-        def _postorder(node, path=[]):
+        def _preorder(node, path=[]):
             l, r = node.l, node.r
             path.append(node)
             if r:
                 r.code = node.code + "0"
-                _postorder(r, path)
+                _preorder(r, path)
             if l:
                 l.code = node.code + "1"
-                _postorder(l, path)
+                _preorder(l, path)
             return path
         
         self.head.code = ""
-        path = _postorder(self.head)
+        path = _preorder(self.head)
         codebook = {node.symbol: node.code for node in path if node.is_leaf()}
         return codebook
 
@@ -69,7 +69,7 @@ class HuffmanTree:
         edge_labels = {}
         node_labels = {}
         
-        def _inorder(node, node_id=0, parent_id=None):
+        def _preorder(node, node_id=0, parent_id=None):
             G.add_node(node_id)
             node_labels[node_id] = f"{node.symbol!r} | {node.code or '-'}"
             
@@ -81,14 +81,14 @@ class HuffmanTree:
             child_id = node_id
             if l:
                 child_id += 1
-                child_id = _inorder(l, child_id, node_id)
+                child_id = _preorder(l, child_id, node_id)
             if r:
                 child_id += 1
-                child_id = _inorder(r, child_id, node_id)
+                child_id = _preorder(r, child_id, node_id)
                 
             return child_id
                 
-        _inorder(self.head)
+        _preorder(self.head)
         
         plt.figure(figsize=(15,10))
         ax = plt.gca()
@@ -127,7 +127,7 @@ def test_encode1():
     expected = dict(zip(sym, ["010", "011", "11", "00", "10"]))
     T = HuffmanTree(sym, p)
     print("entropy", T.entropy)
-    result =  T.encode()
+    result = T.encode()
     T.vis()
     print("exp",expected)
     print("res", result)
@@ -138,7 +138,7 @@ def test_encode2():
     sym = list("abcd")
     p = [.4, .3, .2, .1]
     expected = dict(zip(sym, ["0", "10", "110", "111"]))
-    result =  HuffmanTree(sym,p).encode()
+    result = HuffmanTree(sym,p).encode()
     print("exp",expected)
     print("res", result)
     assert expected == result
