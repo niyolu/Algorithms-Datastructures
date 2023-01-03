@@ -105,7 +105,6 @@ struct PerlinNoise2DGenerator {
                 {grid_x + grid_size, grid_y + grid_size},
         };
         std::vector<double> products;
-        // std::vector<std::vector<double>> grid_vectors;
         constexpr auto seed_length = sizeof(long unsigned int) / 2;
 
         auto weight_x = (x - grid_x) / grid_size;

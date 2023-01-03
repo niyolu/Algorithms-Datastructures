@@ -11,10 +11,8 @@ def bisect(f, y, start, stop, eps):
     y_guess = f(middle)
     if abs(y_guess - y) <= eps:
         return middle
-    if y_guess < y:
-        return bisect(f, y, middle, stop, eps)
-    else:
-        return bisect(f, y, start, middle, eps)
+    
+    return bisect(f, y, *((middle, stop) if y_guess < y else (start, middle)), eps)
 
 
 def inverse(f, y, f_range):
